@@ -22,15 +22,33 @@
 
     <com.example.avaliaon1.UserPosition
         android:id="@+id/userPosition"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="406dp"
+        android:layout_height="192dp"
+        android:maxLines="6"
+        android:paddingLeft="48dp"
         app:Latitude="45.12345"
         app:Longitude="-93.12345"
         app:Velocidade="50"
-        app:exampleString="Exemplo de texto"
         app:exampleColor="@android:color/holo_blue_dark"
         app:exampleDimension="20sp"
-        android:maxLines="6"
-        />
+        app:exampleString="Exemplo de texto"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.49"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.007" />
+
+    <View
+        android:id="@+id/divider"
+        android:layout_width="409dp"
+        android:layout_height="1dp"
+        android:background="?android:attr/listDivider"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.284" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

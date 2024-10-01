@@ -72,12 +72,12 @@ public class UserPosition extends View {
         mTextWidth = mTextPaint.measureText(displayText);
 
         Paint.FontMetrics fontMetrics = mTextPaint.getFontMetrics();
-        mTextHeight = fontMetrics.bottom;
+        mTextHeight = fontMetrics.descent - fontMetrics.ascent; // Obtém a altura correta do texto
     }
 
     private String getDisplayText() {
-        String texto = "Lat: " + mLatitude + "\nLong: " + mLongitude + "\nVelocidade: " + mVelocidade;
-        return texto;
+        String coordenada = "Lat: " + mLatitude + "\nLong: " + mLongitude + "\nVelocidade: " + mVelocidade;
+        return coordenada;
     }
 
     @Override
@@ -92,19 +92,12 @@ public class UserPosition extends View {
         int contentWidth = getWidth() - paddingLeft - paddingRight;
         int contentHeight = getHeight() - paddingTop - paddingBottom;
 
-        // Desenha a borda
-        Paint borderPaint = new Paint();
-        borderPaint.setColor(Color.BLACK);
-        borderPaint.setStyle(Paint.Style.STROKE);
-        borderPaint.setStrokeWidth(4);
-        canvas.drawRect(paddingLeft, paddingTop, getWidth() - paddingRight, getHeight() - paddingBottom, borderPaint);
-
         // Desenha o texto.
         String[] lines = getDisplayText().split("\n");
         for (int i = 0; i < lines.length; i++) {
             canvas.drawText(lines[i],
                     paddingLeft + (contentWidth - mTextWidth) / 2,
-                    paddingTop + (contentHeight / 2) + (i * (mTextHeight + mLineSpacing)), // Altera para adicionar espaçamento
+                    paddingTop + (contentHeight / 2) + (i * (mTextHeight + mLineSpacing)),
                     mTextPaint);
         }
 
