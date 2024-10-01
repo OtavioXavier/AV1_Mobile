@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Avaliação N1</string>
+    <string name="gnss_view_link">Tela GNSS</string>
+    <string name="atividade_2_view_link">Tela Atividade 2</string>
+    <string name="atividade_3_view_link">Tela Atividade 3</string>
+    <string name="titulo_gnss">GNSS</string>
+</resources>

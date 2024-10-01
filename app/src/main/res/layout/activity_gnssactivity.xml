@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".GNSSActivity">
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/titulo_gnss"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.044" />
+
+    <com.example.avaliaon1.UserPosition
+        android:id="@+id/userPosition"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:Latitude="45.12345"
+        app:Longitude="-93.12345"
+        app:Velocidade="50"
+        app:exampleString="Exemplo de texto"
+        app:exampleColor="@android:color/holo_blue_dark"
+        app:exampleDimension="20sp"
+        android:maxLines="6"
+        />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
