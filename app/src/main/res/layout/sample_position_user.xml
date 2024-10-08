@@ -3,9 +3,12 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <TextView
-        android:id="@+id/user_position"
+
+    <com.example.avaliaon1.PositionUser
+        android:id="@+id/positionUser"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/titulo_gnss" />
+        app:textHeight="24dp"
+        app:textColor="@android:color/holo_blue_light"
+        />
 </FrameLayout>

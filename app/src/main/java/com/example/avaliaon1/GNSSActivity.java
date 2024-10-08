@@ -1,44 +1,75 @@
 package com.example.avaliaon1;
 
 import android.content.pm.PackageManager;
-import android.location.GnssStatus;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.location.LocationProvider;
 import android.os.Bundle;
-import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
-
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
-import com.example.avaliaon1.R;
+public class GNSSActivity extends AppCompatActivity implements SensorEventListener {
 
-public class GNSSActivity extends AppCompatActivity {
-
-    private LocationManager locationManager;
     private static final int REQUEST_LOCATION = 1;
+    private LocationManager locationManager;
+    private PositionUser positionUser;
+    private SensorManager sensorManager;
+    private Sensor rotationVectorSensor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_gnssactivity);
-        EdgeToEdge.enable(this);
 
+        positionUser = findViewById(R.id.positionUser);
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-        obtemLocationProvider_Permission();
+        sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
+        rotationVectorSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR);
+
+        requestLocationPermission();
     }
 
-    public void obtemLocationProvider_Permission() {
+    @Override
+    protected void onResume() {
+        super.onResume();
+        sensorManager.registerListener(this, rotationVectorSensor, SensorManager.SENSOR_DELAY_UI);
+        startLocationUpdates();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        sensorManager.unregisterListener(this);
+        locationManager.removeUpdates(locationListener);
+    }
+
+    @Override
+    public void onSensorChanged(SensorEvent event) {
+        if (event.sensor.getType() == Sensor.TYPE_ROTATION_VECTOR) {
+            float[] rotationMatrix = new float[9];
+            SensorManager.getRotationMatrixFromVector(rotationMatrix, event.values);
+
+            float[] orientationAngles = new float[3];
+            SensorManager.getOrientation(rotationMatrix, orientationAngles);
+
+            float azimuth = (float) Math.toDegrees(orientationAngles[0]);
+            positionUser.setRotate(azimuth);
+        }
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {}
+
+    private void requestLocationPermission() {
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) {
-            startLocationAndGNSSUpdates();
+            startLocationUpdates();
         } else {
             ActivityCompat.requestPermissions(this,
                     new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
@@ -48,66 +79,34 @@ public class GNSSActivity extends AppCompatActivity {
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == REQUEST_LOCATION) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                obtemLocationProvider_Permission();
-            } else {
-                Toast.makeText(this, "Sem permissão para acessar o sistema de posicionamento", Toast.LENGTH_SHORT).show();
-                finish();
-            }
-        }
-    }
-
-    public void startLocationAndGNSSUpdates() {
-        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
-            return;
-        }
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 0.1f,
-                new LocationListener() {
-                    @Override
-                    public void onLocationChanged(@NonNull Location location) {
-                        mostraLocation(location);
-                    }
-                });
-
-        locationManager.registerGnssStatusCallback(new GnssStatus.Callback() {
-            @Override
-            public void onSatelliteStatusChanged(@NonNull GnssStatus status) {
-                super.onSatelliteStatusChanged(status);
-                mostraGNSS(status);
-            }
-        });
-    }
-
-    public void mostraLocation(Location location) {
-        UserPosition userPosition = findViewById(R.id.userPosition);
-
-        if (location != null) {
-            String latitude = Location.convert(location.getLatitude(), Location.FORMAT_SECONDS);
-            String longitude = Location.convert(location.getLongitude(), Location.FORMAT_SECONDS);
-            String velocidade = String.valueOf(location.getSpeed());
-
-            userPosition.setLatitude(latitude);
-            userPosition.setLongitude(longitude);
-            userPosition.setVelocidade(velocidade);
+        if (requestCode == REQUEST_LOCATION && grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            startLocationUpdates();
         } else {
-            userPosition.setLatitude("N/A");
-            userPosition.setLongitude("N/A");
-            userPosition.setVelocidade("N/A");
+            Toast.makeText(this, "Sem permissão para acessar o sistema de posicionamento", Toast.LENGTH_SHORT).show();
+            finish();
         }
     }
 
+    private final LocationListener locationListener = new LocationListener() {
+        @Override
+        public void onLocationChanged(@NonNull Location location) {
+            positionUser.setPosition(location.getLatitude(), location.getLongitude());
+        }
 
-    public void mostraGNSS(GnssStatus status) {
-    }
+        @Override
+        public void onStatusChanged(String provider, int status, Bundle extras) {}
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            locationManager.removeUpdates((LocationListener) this);
+        @Override
+        public void onProviderEnabled(@NonNull String provider) {}
+
+        @Override
+        public void onProviderDisabled(@NonNull String provider) {}
+    };
+
+    private void startLocationUpdates() {
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
         }
     }
 }
