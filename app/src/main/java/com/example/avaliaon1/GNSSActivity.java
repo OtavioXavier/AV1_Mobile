@@ -24,40 +24,35 @@ import java.util.List;
 public class GNSSActivity extends AppCompatActivity implements View.OnClickListener, SensorEventListener {
 
     private static final int REQUEST_LOCATION = 1;
+    private static final int AZIMUTH_HISTORY_SIZE = 10;
+
     private LocationManager locationManager;
     private PositionUser positionUser;
     private SensorManager sensorManager;
     private Sensor rotationVectorSensor;
-    private static final int AZIMUTH_HISTORY_SIZE = 10;
     private final List<Float> azimuthHistory = new ArrayList<>();
-    private int escolhaCoordenadas = 0;
-    String tipoCoordenadas = "Graus [+/-DDD.DDDDD]";
-
+    private SharedPreferences sharedPrefs;
+    private String tipoCoordenadas;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_gnssactivity);
 
+        initializeComponents();
+        requestLocationPermission();
+    }
+
+    private void initializeComponents() {
         positionUser = findViewById(R.id.positionUser);
         positionUser.setOnClickListener(this);
 
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         rotationVectorSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR);
-        escolhaCoordenadas = getIndexOfTipo(tipoCoordenadas);
 
-        requestLocationPermission();
-    }
-
-    private int getIndexOfTipo(String tipo) {
-        String[] escolhas = {"Graus [+/-DDD.DDDDD]", "Graus-Minutos [+/-DDD:MM.MMMMM]", "Graus-Minutos-Segundos [+/-DDD:MM:SS.SSSSS]"};
-        for (int i = 0; i < escolhas.length; i++) {
-            if (escolhas[i].equals(tipo)) {
-                return i;
-            }
-        }
-        return 0;
+        sharedPrefs = getSharedPreferences("app_prefs", Context.MODE_PRIVATE);
+        tipoCoordenadas = sharedPrefs.getString("coordenadas", "Graus [+/-DDD.DDDDD]");
     }
 
     @Override
@@ -79,12 +74,10 @@ public class GNSSActivity extends AppCompatActivity implements View.OnClickListe
         if (event.sensor.getType() == Sensor.TYPE_ROTATION_VECTOR) {
             float[] rotationMatrix = new float[9];
             SensorManager.getRotationMatrixFromVector(rotationMatrix, event.values);
-
             float[] orientationAngles = new float[3];
             SensorManager.getOrientation(rotationMatrix, orientationAngles);
 
             float azimuth = (float) Math.toDegrees(orientationAngles[0]);
-
             azimuthHistory.add(azimuth);
             if (azimuthHistory.size() > AZIMUTH_HISTORY_SIZE) {
                 azimuthHistory.remove(0);
@@ -95,48 +88,61 @@ public class GNSSActivity extends AppCompatActivity implements View.OnClickListe
                 smoothedAzimuth += a;
             }
             smoothedAzimuth /= azimuthHistory.size();
-
-            float roundedAzimuth = Math.round(smoothedAzimuth);
-
-            positionUser.setRotate(roundedAzimuth);
+            positionUser.setRotate(Math.round(smoothedAzimuth));
         }
     }
 
     @Override
     public void onClick(View view) {
         if (view.getId() == R.id.positionUser) {
-          String[] escolhasCoordenadas = {"Graus [+/-DDD.DDDDD]", "Graus-Minutos [+/-DDD:MM.MMMMM]", "Graus-Minutos-Segundos [+/-DDD:MM:SS.SSSSS]"};
-
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-
-            builder
-                    .setTitle("Trocar tipo de coordenada:")
-                    .setPositiveButton("Salvar", (dialog, which) -> {
-                        tipoCoordenadas = escolhasCoordenadas[which];
-                    })
-                    .setNegativeButton("Cancelar", (dialog, which) -> {
-                        Toast.makeText(this, "Cancelado!", Toast.LENGTH_SHORT).show();
-
-                    })
-                    .setSingleChoiceItems(escolhasCoordenadas, escolhaCoordenadas, (dialog, which) -> {
-                        escolhaCoordenadas = which;
-                    });
-
-            AlertDialog dialog = builder.create();
-            dialog.show();
+            showCoordinateTypeDialog();
         }
     }
 
-    //Seção de Localização ->
+    private void showCoordinateTypeDialog() {
+        String[] escolhasCoordenadas = {
+                "Graus [+/-DDD.DDDDD]",
+                "Graus-Minutos [+/-DDD:MM.MMMMM]",
+                "Graus-Minutos-Segundos [+/-DDD:MM:SS.SSSSS]"
+        };
+        int escolhaAtual = getIndexOfTipo(tipoCoordenadas);
+
+        new AlertDialog.Builder(this)
+                .setTitle("Trocar tipo de coordenada:")
+                .setSingleChoiceItems(escolhasCoordenadas, escolhaAtual, (dialog, which) -> {
+                    tipoCoordenadas = escolhasCoordenadas[which];
+                })
+                .setPositiveButton("Salvar", (dialog, which) -> {
+                    sharedPrefs.edit().putString("coordenadas", tipoCoordenadas).apply();
+                    Toast.makeText(this, "Tipo de coordenada salvo!", Toast.LENGTH_SHORT).show();
+                })
+                .setNegativeButton("Cancelar", (dialog, which) -> {
+                    Toast.makeText(this, "Cancelado!", Toast.LENGTH_SHORT).show();
+                })
+                .create()
+                .show();
+    }
+
+
+    private int getIndexOfTipo(String tipo) {
+        String[] escolhas = {
+                "Graus [+/-DDD.DDDDD]",
+                "Graus-Minutos [+/-DDD:MM.MMMMM]",
+                "Graus-Minutos-Segundos [+/-DDD:MM:SS.SSSSS]"
+        };
+        for (int i = 0; i < escolhas.length; i++) {
+            if (escolhas[i].equals(tipo)) {
+                return i;
+            }
+        }
+        return 0; // Default to first choice
+    }
 
     private void requestLocationPermission() {
-        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             startLocationUpdates();
         } else {
-            ActivityCompat.requestPermissions(this,
-                    new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
-                    REQUEST_LOCATION);
+            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_LOCATION);
         }
     }
 
@@ -168,8 +174,7 @@ public class GNSSActivity extends AppCompatActivity implements View.OnClickListe
     };
 
     private void startLocationUpdates() {
-        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
         }
     }
