@@ -80,14 +80,40 @@ public class PositionUser extends View {
         canvas.restore();
     }
 
-    public void setPosition(double latitude, double longitude) {
-        mLatitude = "Latitude: " + latitude;
-        mLongitude = "Longitude: " + longitude;
+    public void setPosition(String positionType, double latitude, double longitude) {
+        if (positionType.equals("Graus [+/-DDD.DDDDD]")) {
+            mLatitude = "Latitude: " + formatDecimalDegrees(latitude);
+            mLongitude = "Longitude: " + formatDecimalDegrees(longitude);
+        } else if (positionType.equals("Graus-Minutos [+/-DDD:MM.MMMMM]")) {
+            mLatitude = "Latitude: " + formatDegreesMinutes(latitude);
+            mLongitude = "Longitude: " + formatDegreesMinutes(longitude);
+        } else if (positionType.equals("Graus-Minutos-Segundos [+/-DDD:MM:SS.SSSSS]")) {
+            mLatitude = "Latitude: " + formatDegreesMinutesSeconds(latitude);
+            mLongitude = "Longitude: " + formatDegreesMinutesSeconds(longitude);
+        }
         invalidate();
     }
 
+    private String formatDecimalDegrees(double coordinate) {
+        return String.format("%+.5f", coordinate);
+    }
+
+    private String formatDegreesMinutes(double coordinate) {
+        int degrees = (int) coordinate;
+        double minutes = (Math.abs(coordinate) - Math.abs(degrees)) * 60;
+        return String.format("%+d:%06.5f", degrees, minutes);
+    }
+
+    private String formatDegreesMinutesSeconds(double coordinate) {
+        int degrees = (int) coordinate;
+        double minutesRaw = (Math.abs(coordinate) - Math.abs(degrees)) * 60;
+        int minutes = (int) minutesRaw;
+        double seconds = (minutesRaw - minutes) * 60;
+        return String.format("%+d:%02d:%06.3f", degrees, minutes, seconds);
+    }
+
     public void setRotate(float rotacao ) {
-        mDirecao = rotacao -90;
+        mDirecao = rotacao;
         invalidate();
 
     }
