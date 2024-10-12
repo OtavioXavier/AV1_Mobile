@@ -1,9 +1,0 @@
-<resources>
-    <declare-styleable name="PositionUser">
-        <attr name="latitude" format="string" />
-        <attr name="longitude" format="string" />
-        <attr name="direcao" format="float" />
-        <attr name="textHeight" format="dimension" />
-        <attr name="textColor" format="color" />
-    </declare-styleable>
-</resources>

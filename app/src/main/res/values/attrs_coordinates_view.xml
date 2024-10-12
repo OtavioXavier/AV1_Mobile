@@ -1,0 +1,10 @@
+<resources>
+    <declare-styleable name="CoordinatesView">
+<!--        <attr name="mLatitude" format="string" />-->
+<!--        <attr name="mLongitude" format="string" />-->
+<!--        <attr name="type" format="enum" />-->
+<!--        <attr name="exampleDimension" format="dimension" />-->
+<!--        <attr name="exampleColor" format="color" />-->
+<!--        <attr name="exampleDrawable" format="color|reference" />-->
+    </declare-styleable>
+</resources>
