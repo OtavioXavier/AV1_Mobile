@@ -2,9 +2,11 @@ package com.example.avaliaon1;
 
 import android.annotation.SuppressLint;
 import android.content.pm.PackageManager;
+import android.location.GnssStatus;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.location.LocationProvider;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -15,15 +17,21 @@ import androidx.core.content.ContextCompat;
 
 import android.Manifest;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class GNSSActivity extends AppCompatActivity implements LocationListener {
 
     LocationManager locationManager;
+    private LocationProvider locationProvider;
+    private static final int REQUEST_LOCATION = 1;
+
     private RotationSensorHandler rotationSensorHandler;
 
     CoordinatesView coordinatesView;
     CompassView compassView;
+    SatellitesMapView satellitesMapView;
+
     private int choiceCoordinate = 0;
 
 
@@ -31,11 +39,23 @@ public class GNSSActivity extends AppCompatActivity implements LocationListener 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_gnssactivity);
-        checkPermissions();
-        getLocation();
 
         coordinatesView = (CoordinatesView) findViewById(R.id.coordinates);
         compassView = (CompassView) findViewById(R.id.compass);
+        satellitesMapView = (SatellitesMapView) findViewById(R.id.satellites_map);
+        locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+
+        // Verifique se locationManager não é null
+        if (locationManager == null) {
+            Toast.makeText(this, "Erro ao inicializar LocationManager", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+
+        checkPermissions();
+        getLocation();
+
+
 
         rotationSensorHandler = new RotationSensorHandler(this, this);
         rotationSensorHandler.startListening();
@@ -72,6 +92,7 @@ public class GNSSActivity extends AppCompatActivity implements LocationListener 
 
             }
         });
+
     }
 
     public void updateAzimuth(float azimuth) {
@@ -92,13 +113,35 @@ public class GNSSActivity extends AppCompatActivity implements LocationListener 
 
     public void checkPermissions() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{
-                    Manifest.permission.ACCESS_FINE_LOCATION
-            }, 100);
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 100);
+        } else {
+            authorize_provider();
         }
     }
 
-    @Override
+    public void authorize_provider() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            locationProvider = locationManager.getProvider(LocationManager.GPS_PROVIDER);
+            startListeningUpdates();
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    public void startListeningUpdates() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+        locationManager.requestLocationUpdates(locationProvider.getName(), 1000, 0.1f, this);
+        locationManager.registerGnssStatusCallback(new GnssStatus.Callback() {
+            @Override
+            public void onSatelliteStatusChanged(@NonNull GnssStatus status) {
+                super.onSatelliteStatusChanged(status);
+                satellitesMapView.setStatus(status);
+            }
+        });
+    }
+
+        @Override
     public void onLocationChanged(@NonNull Location location) {
         coordinatesView.setCoordinates(location.getLatitude(), location.getLongitude());
     }
@@ -106,6 +149,7 @@ public class GNSSActivity extends AppCompatActivity implements LocationListener 
     @Override
     public void onStatusChanged(String provider, int status, Bundle extras) {
         LocationListener.super.onStatusChanged(provider, status, extras);
+
     }
 
     @Override

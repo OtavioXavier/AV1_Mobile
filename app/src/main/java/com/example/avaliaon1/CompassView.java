@@ -60,8 +60,8 @@ public class CompassView extends View {
         // Coordenadas da seta (direção)
         int newWidth = 100;
         int newHeight = 100;
-        float centerX = getWidth() / 2; // Centro horizontal da View
-        float centerY = getHeight() / 2; // Centro vertical da View
+        float centerX = getWidth() / 2;
+        float centerY = getHeight() / 2;
         float left = centerX - newWidth / 2;
         float top = centerY - newHeight / 2;
 
@@ -74,12 +74,6 @@ public class CompassView extends View {
         matrix.postTranslate(centerX, centerY);
 
         canvas.drawBitmap(scaledBitmap, matrix, null);
-
-        // Textos das direções
-        canvas.drawText("N", centerX, 30, textPaint);
-        canvas.drawText("L", getWidth() - 30, centerY, textPaint);
-        canvas.drawText("S", centerX, getHeight() - 30, textPaint);
-        canvas.drawText("O", 30, centerY, textPaint);
 
         // Mostrar o ângulo atual
         canvas.drawText(mDegree + "°", 25, 40, textPaint);
