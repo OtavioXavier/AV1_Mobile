@@ -16,7 +16,10 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import android.Manifest;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.CheckBox;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -24,8 +27,6 @@ public class GNSSActivity extends AppCompatActivity implements LocationListener 
 
     LocationManager locationManager;
     private LocationProvider locationProvider;
-    private static final int REQUEST_LOCATION = 1;
-
     private RotationSensorHandler rotationSensorHandler;
 
     CoordinatesView coordinatesView;
@@ -33,7 +34,8 @@ public class GNSSActivity extends AppCompatActivity implements LocationListener 
     SatellitesMapView satellitesMapView;
 
     private int choiceCoordinate = 0;
-
+    private String selectedConstellation = "All";
+    private boolean filterUsedInFix = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,45 +53,24 @@ public class GNSSActivity extends AppCompatActivity implements LocationListener 
             return;
         }
 
-
         checkPermissions();
         getLocation();
-
-
 
         rotationSensorHandler = new RotationSensorHandler(this, this);
         rotationSensorHandler.startListening();
 
+        satellitesMapView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showSatellitesFilter();
+            }
+        });
+
+
         coordinatesView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                CoordinateTypes[] choices = CoordinateTypes.values();
-                String[] choiceStrings = new String[choices.length];
-                for (int i = 0; i < choices.length; i++) {
-                    choiceStrings[i] = choices[i].toString();
-                }
-
-                AlertDialog.Builder switchBox = new AlertDialog.Builder(GNSSActivity.this);
-                switchBox.setTitle("Switch coordinate type")
-                        .setIcon(R.drawable.switch_box_icon)
-                        .setSingleChoiceItems(choiceStrings, choiceCoordinate, (dialog, which) -> {
-                            choiceCoordinate = which;
-                        })
-                        .setPositiveButton("Salvar", (dialog, which) -> {
-                            choiceCoordinate = ((AlertDialog) dialog).getListView().getCheckedItemPosition();
-                            for (CoordinateTypes type : CoordinateTypes.values()) {
-                                if (choices[choiceCoordinate].equals(type)) {
-                                    coordinatesView.setType(type);
-                                    break;
-                                }
-                            }
-                            Toast.makeText(GNSSActivity.this, "Tipo salvo: " + choiceStrings[choiceCoordinate], Toast.LENGTH_SHORT).show();
-                        })
-                        .setNegativeButton("Cancelar", (dialog, which) -> {
-                            Toast.makeText(GNSSActivity.this, "Cancelado!", Toast.LENGTH_SHORT).show();
-                        });
-                switchBox.show();
-
+                showSwitcherCoordinate();
             }
         });
 
@@ -99,6 +80,92 @@ public class GNSSActivity extends AppCompatActivity implements LocationListener 
         compassView.setDegree(azimuth);
     }
 
+    public void showSatellitesFilter() {
+//        String[] constellations = {"All", "GPS", "Galileo", "Glonass", "Beidou", "QZSS"};
+//        boolean[] fixOptions = {true, false};
+//        String selection = selectedConstellation;
+
+        LayoutInflater inflater = getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.dialog_satellite_filter, null);
+
+        RadioGroup constellationGroup = dialogView.findViewById(R.id.constellation_group);
+        CheckBox usedInFixCheckBox = dialogView.findViewById(R.id.used_in_fix);
+        usedInFixCheckBox.setChecked(filterUsedInFix);
+
+        switch (selectedConstellation) {
+            case "GPS":
+                constellationGroup.check(R.id.gps);
+                break;
+            case "Galileo":
+                constellationGroup.check(R.id.galileo);
+                break;
+            case "Glonass":
+                constellationGroup.check(R.id.glonass);
+                break;
+            case "Beidou":
+                constellationGroup.check(R.id.beidou);
+                break;
+            case "QZSS":
+                constellationGroup.check(R.id.qzss);
+                break;
+            default:
+                constellationGroup.check(R.id.all_constellations);
+        }
+
+        usedInFixCheckBox.setChecked(filterUsedInFix);
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Filtrar Satélites")
+                .setView(dialogView)
+                .setPositiveButton("Aplicar", (dialog, which) -> {
+                    // Update filter variables
+                    int selectedId = constellationGroup.getCheckedRadioButtonId();
+                    if (selectedId == R.id.gps) {
+                        selectedConstellation = "GPS";
+                    } else if (selectedId == R.id.galileo) {
+                        selectedConstellation = "Galileo";
+                    } else if (selectedId == R.id.glonass) {
+                        selectedConstellation = "Glonass";
+                    } else if (selectedId == R.id.beidou) {
+                        selectedConstellation = "Beidou";
+                    } else if (selectedId == R.id.qzss) {
+                        selectedConstellation = "QZSS";
+                    } else {
+                        selectedConstellation = "All";
+                    }
+
+                    filterUsedInFix = usedInFixCheckBox.isChecked();
+                    satellitesMapView.setFilters(selectedConstellation, filterUsedInFix);
+                })
+                .setNegativeButton("Cancelar", (dialog, which) -> {
+                    // Revert selection if needed
+                }).show();
+    }
+
+    public void showSwitcherCoordinate() {
+        CoordinateTypes[] choices = CoordinateTypes.values();
+        String[] choiceStrings = new String[choices.length];
+        for (int i = 0; i < choices.length; i++) {
+            choiceStrings[i] = choices[i].toString();
+        }
+
+        AlertDialog.Builder switchBox = new AlertDialog.Builder(GNSSActivity.this);
+        switchBox.setTitle("Switch coordinate type").setIcon(R.drawable.switch_box_icon).setSingleChoiceItems(choiceStrings, choiceCoordinate, (dialog, which) -> {
+            choiceCoordinate = which;
+        }).setPositiveButton("Salvar", (dialog, which) -> {
+            choiceCoordinate = ((AlertDialog) dialog).getListView().getCheckedItemPosition();
+            for (CoordinateTypes type : CoordinateTypes.values()) {
+                if (choices[choiceCoordinate].equals(type)) {
+                    coordinatesView.setType(type);
+                    break;
+                }
+            }
+            Toast.makeText(GNSSActivity.this, "Tipo salvo: " + choiceStrings[choiceCoordinate], Toast.LENGTH_SHORT).show();
+        }).setNegativeButton("Cancelar", (dialog, which) -> {
+            Toast.makeText(GNSSActivity.this, "Cancelado!", Toast.LENGTH_SHORT).show();
+        });
+        switchBox.show();
+    }
 
     @SuppressLint("MissingPermission")
     public void getLocation() {
@@ -141,7 +208,7 @@ public class GNSSActivity extends AppCompatActivity implements LocationListener 
         });
     }
 
-        @Override
+    @Override
     public void onLocationChanged(@NonNull Location location) {
         coordinatesView.setCoordinates(location.getLatitude(), location.getLongitude());
     }

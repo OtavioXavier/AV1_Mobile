@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Escolha a Constelação" />
+
+    <RadioGroup
+        android:id="@+id/constellation_group"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <RadioButton
+            android:id="@+id/all_constellations"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="All" />
+
+        <RadioButton
+            android:id="@+id/gps"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="GPS" />
+
+        <RadioButton
+            android:id="@+id/galileo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Galileo" />
+
+        <RadioButton
+            android:id="@+id/glonass"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Glonass" />
+
+        <RadioButton
+            android:id="@+id/beidou"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Beidou" />
+
+        <RadioButton
+            android:id="@+id/qzss"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="QZSS" />
+    </RadioGroup>
+
+    <CheckBox
+        android:id="@+id/used_in_fix"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Used in Fix"
+        android:checked="false" />
+</LinearLayout>

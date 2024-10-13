@@ -11,7 +11,9 @@ import android.text.TextPaint;
 import android.util.AttributeSet;
 import android.view.View;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class SatellitesMapView extends View {
 
@@ -19,6 +21,9 @@ public class SatellitesMapView extends View {
     private int height, width, raio;
     private static final int FLAG_WIDTH = 64;
     private static final int FLAG_HEIGHT = 44;
+
+    private String filteredConstellations = "All";
+    private boolean filterUsedInFix = false;
 
 
     private Paint circlePaint = new Paint();
@@ -83,6 +88,10 @@ public class SatellitesMapView extends View {
 
     }
 
+    public void drawSatellite(Canvas canvas) {
+
+    }
+
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
@@ -110,31 +119,31 @@ public class SatellitesMapView extends View {
         // Desenhar lista de satelites
         if (status != null) {
             for (int i = 0; i < status.getSatelliteCount(); i++) {
-                float az = status.getAzimuthDegrees(i);
-                float el = status.getElevationDegrees(i);
-                float x = (float) (raio * Math.cos(Math.toRadians(el)) * Math.sin(Math.toRadians(az)));
-                float y = (float) (raio * Math.cos(Math.toRadians(el)) * Math.cos(Math.toRadians(az)));
-                if (status.usedInFix(i)) {
-                    satellitePaint.setColor(Color.GREEN);
-                } else {
-                    satellitePaint.setColor(Color.RED);
-                }
-                canvas.drawCircle(computeXc(x), computeYc(y), 10, satellitePaint);
-                String satID = status.getSvid(i) + " " + getConstellationName(status.getConstellationType(i));
-                canvas.drawText(satID, computeXc(x) + 10, computeYc(y) + 10, textPaint);
-
-                Drawable constellationIcon = getConstellationIcon(status.getConstellationType(i));
-                if (constellationIcon != null) {
-                    int flagLeft = computeXc(x) - (FLAG_WIDTH / 2);
-                    int flagTop = computeYc(y) + 20; // Ajuste para posicionar abaixo do círculo
-                    int flagRight = flagLeft + FLAG_WIDTH;
-                    int flagBottom = flagTop + FLAG_HEIGHT;
-                    constellationIcon.setBounds(flagLeft, flagTop, flagRight, flagBottom);
-                    constellationIcon.draw(canvas);
+                boolean shouldDraw = filteredConstellations.equals("All") ||
+                        getConstellationName(status.getConstellationType(i)).equals(filteredConstellations);
+                if (shouldDraw && (!filterUsedInFix || (filterUsedInFix && status.usedInFix(i)))) {
+                    float az = status.getAzimuthDegrees(i);
+                    float el = status.getElevationDegrees(i);
+                    float x = (float) (raio * Math.cos(Math.toRadians(el)) * Math.sin(Math.toRadians(az)));
+                    float y = (float) (raio * Math.cos(Math.toRadians(el)) * Math.cos(Math.toRadians(az)));
+                    satellitePaint.setColor(status.usedInFix(i) ? Color.GREEN : Color.RED);
+                    canvas.drawCircle(computeXc(x), computeYc(y), 10, satellitePaint);
+                    String satID = status.getSvid(i) + " " + getConstellationName(status.getConstellationType(i));
+                    canvas.drawText(satID, computeXc(x) + 10, computeYc(y) + 10, textPaint);
+                    Drawable constellationIcon = getConstellationIcon(status.getConstellationType(i));
+                    if (constellationIcon != null) {
+                        int flagLeft = computeXc(x) - (FLAG_WIDTH / 2);
+                        int flagTop = computeYc(y) + 20;
+                        int flagRight = flagLeft + FLAG_WIDTH;
+                        int flagBottom = flagTop + FLAG_HEIGHT;
+                        constellationIcon.setBounds(flagLeft, flagTop, flagRight, flagBottom);
+                        constellationIcon.draw(canvas);
+                    }
                 }
             }
         }
-    }
+}
+
 
         private Drawable getConstellationIcon(int constellationType) {
         switch (constellationType) {
@@ -180,6 +189,12 @@ public class SatellitesMapView extends View {
 
     public void setStatus(GnssStatus status) {
         this.status = status;
+        invalidate();
+    }
+
+    public void setFilters(String satellites, boolean usedIn) {
+        this.filteredConstellations = satellites;
+        this.filterUsedInFix = usedIn;
         invalidate();
     }
 }
