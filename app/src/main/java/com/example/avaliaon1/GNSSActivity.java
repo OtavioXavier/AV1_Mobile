@@ -20,8 +20,12 @@ import android.widget.Toast;
 public class GNSSActivity extends AppCompatActivity implements LocationListener {
 
     LocationManager locationManager;
+    private RotationSensorHandler rotationSensorHandler;
+
     CoordinatesView coordinatesView;
+    CompassView compassView;
     private int choiceCoordinate = 0;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,6 +35,11 @@ public class GNSSActivity extends AppCompatActivity implements LocationListener 
         getLocation();
 
         coordinatesView = (CoordinatesView) findViewById(R.id.coordinates);
+        compassView = (CompassView) findViewById(R.id.compass);
+
+        rotationSensorHandler = new RotationSensorHandler(this, this);
+        rotationSensorHandler.startListening();
+
         coordinatesView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -64,6 +73,11 @@ public class GNSSActivity extends AppCompatActivity implements LocationListener 
             }
         });
     }
+
+    public void updateAzimuth(float azimuth) {
+        compassView.setDegree(azimuth);
+    }
+
 
     @SuppressLint("MissingPermission")
     public void getLocation() {
