@@ -87,19 +87,6 @@ public class SatellitesMapView extends View {
         textPaint.setTextSize(30);
         textPaint.setColor(Color.WHITE);
         textPaint.setAntiAlias(true);
-
-        startRotationAnimation();
-    }
-
-    private void startRotationAnimation() {
-        ValueAnimator animator = ValueAnimator.ofFloat(0f, 360f);
-        animator.setDuration(200000);
-        animator.setRepeatCount(ValueAnimator.INFINITE);
-        animator.addUpdateListener(animation -> {
-            rotationAngle = (float) animation.getAnimatedValue();
-            invalidate();
-        });
-        animator.start();
     }
 
     @Override
@@ -213,6 +200,11 @@ public class SatellitesMapView extends View {
     public void setFilters(String satellites, boolean usedIn) {
         this.filteredConstellations = satellites;
         this.filterUsedInFix = usedIn;
+        invalidate();
+    }
+
+    public void setRotation(float rotation) {
+        this.rotationAngle = rotation;
         invalidate();
     }
 }

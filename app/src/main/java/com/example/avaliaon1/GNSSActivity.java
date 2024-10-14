@@ -208,6 +208,7 @@ public class GNSSActivity extends AppCompatActivity implements LocationListener 
 
     public void updateAzimuth(float azimuth) {
         compassView.setDegree(azimuth);
+        satellitesMapView.setRotation(azimuth);
     }
 
     @Override

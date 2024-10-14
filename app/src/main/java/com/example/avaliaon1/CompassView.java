@@ -77,7 +77,7 @@ public class CompassView extends View {
         canvas.drawBitmap(scaledBitmap, matrix, null);
 
         // Mostrar o ângulo atual
-        canvas.drawText(-mDegree + "°", 25, 40, textPaint);
+        canvas.drawText(mDegree + "°", 25, 40, textPaint);
     }
 
 

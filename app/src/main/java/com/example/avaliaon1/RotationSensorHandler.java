@@ -36,7 +36,7 @@ public class RotationSensorHandler implements SensorEventListener {
             float azimuth = (float) Math.toDegrees(orientation[0]);
             azimuth = (azimuth + 360) % 360;  // Normaliza o azimute para [0, 360] graus
 
-            activity.updateAzimuth(Math.round(-azimuth));
+            activity.updateAzimuth(Math.round(azimuth));
         }
     }
 
