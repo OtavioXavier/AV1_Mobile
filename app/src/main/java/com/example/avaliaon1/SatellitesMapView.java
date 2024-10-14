@@ -1,5 +1,6 @@
 package com.example.avaliaon1;
 
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
@@ -24,6 +25,7 @@ public class SatellitesMapView extends View {
 
     private String filteredConstellations = "All";
     private boolean filterUsedInFix = false;
+    private float rotationAngle = 0f;
 
 
     private Paint circlePaint = new Paint();
@@ -86,10 +88,18 @@ public class SatellitesMapView extends View {
         textPaint.setColor(Color.WHITE);
         textPaint.setAntiAlias(true);
 
+        startRotationAnimation();
     }
 
-    public void drawSatellite(Canvas canvas) {
-
+    private void startRotationAnimation() {
+        ValueAnimator animator = ValueAnimator.ofFloat(0f, 360f);
+        animator.setDuration(200000);
+        animator.setRepeatCount(ValueAnimator.INFINITE);
+        animator.addUpdateListener(animation -> {
+            rotationAngle = (float) animation.getAnimatedValue();
+            invalidate();
+        });
+        animator.start();
     }
 
     @Override
@@ -98,6 +108,7 @@ public class SatellitesMapView extends View {
         // Plano de fundo
         canvas.drawRect(0, 0, getWidth(), getHeight(), backgroundPaint);
         canvas.drawRect(0, 0, getWidth(), getHeight(), borderPaint);
+
         // definindo o raio do circulo
         width = getMeasuredWidth();
         height = getMeasuredHeight();
@@ -106,16 +117,24 @@ public class SatellitesMapView extends View {
         else
             raio = (int) (height / 2 * 0.9);
         // Circulo
+
         int centerX = getWidth() / 2;
         int centerY = getHeight() / 2;
+
+        canvas.save();
+        canvas.rotate(rotationAngle, centerX, centerY);
+
         canvas.drawCircle(centerX, centerY, raio, circlePaint);
         canvas.drawCircle(centerX, centerY, raio, borderCirclePaint);
+
         for (int i = 1; i <= 3; i++) {
             int smallerRadius = raio - (i * (raio / 4));
             canvas.drawCircle(centerX, centerY, smallerRadius, concentricCirclePaint);
         }
+
         canvas.drawLine(centerX - raio, centerY, centerX + raio, centerY, linePaint);
         canvas.drawLine(centerX, centerY - raio, centerX, centerY + raio, linePaint);
+
         // Desenhar lista de satelites
         if (status != null) {
             for (int i = 0; i < status.getSatelliteCount(); i++) {
@@ -142,10 +161,9 @@ public class SatellitesMapView extends View {
                 }
             }
         }
-}
+    }
 
-
-        private Drawable getConstellationIcon(int constellationType) {
+    private Drawable getConstellationIcon(int constellationType) {
         switch (constellationType) {
             case GnssStatus.CONSTELLATION_GPS:
                 return getResources().getDrawable(R.drawable.eua);
