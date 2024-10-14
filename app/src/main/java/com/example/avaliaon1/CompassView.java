@@ -63,8 +63,6 @@ public class CompassView extends View {
         int newHeight = 100;
         float centerX = getWidth() / 2;
         float centerY = getHeight() / 2;
-        float left = centerX - newWidth / 2;
-        float top = centerY - newHeight / 2;
 
         Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.seta_direita);
         Bitmap scaledBitmap = Bitmap.createScaledBitmap(bitmap, newWidth, newHeight, true);
