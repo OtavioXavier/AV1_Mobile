@@ -87,11 +87,13 @@ public class SatellitesMapView extends View {
         textPaint.setTextSize(30);
         textPaint.setColor(Color.WHITE);
         textPaint.setAntiAlias(true);
+
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
+
         // Plano de fundo
         canvas.drawRect(0, 0, getWidth(), getHeight(), backgroundPaint);
         canvas.drawRect(0, 0, getWidth(), getHeight(), borderPaint);
@@ -103,13 +105,13 @@ public class SatellitesMapView extends View {
             raio = (int) (width / 2 * 0.9);
         else
             raio = (int) (height / 2 * 0.9);
-        // Circulo
 
+        // Circulo
         int centerX = getWidth() / 2;
         int centerY = getHeight() / 2;
 
         canvas.save();
-        canvas.rotate(rotationAngle, centerX, centerY);
+        canvas.rotate(-rotationAngle, centerX, centerY);
 
         canvas.drawCircle(centerX, centerY, raio, circlePaint);
         canvas.drawCircle(centerX, centerY, raio, borderCirclePaint);
@@ -122,6 +124,8 @@ public class SatellitesMapView extends View {
         canvas.drawLine(centerX - raio, centerY, centerX + raio, centerY, linePaint);
         canvas.drawLine(centerX, centerY - raio, centerX, centerY + raio, linePaint);
 
+        canvas.save();
+        canvas.rotate(rotationAngle, centerX, centerY);
         // Desenhar lista de satelites
         if (status != null) {
             for (int i = 0; i < status.getSatelliteCount(); i++) {
@@ -132,6 +136,8 @@ public class SatellitesMapView extends View {
                     float el = status.getElevationDegrees(i);
                     float x = (float) (raio * Math.cos(Math.toRadians(el)) * Math.sin(Math.toRadians(az)));
                     float y = (float) (raio * Math.cos(Math.toRadians(el)) * Math.cos(Math.toRadians(az)));
+
+
                     satellitePaint.setColor(status.usedInFix(i) ? Color.GREEN : Color.RED);
                     canvas.drawCircle(computeXc(x), computeYc(y), 10, satellitePaint);
                     String satID = status.getSvid(i) + " " + getConstellationName(status.getConstellationType(i));
