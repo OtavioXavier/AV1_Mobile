@@ -76,14 +76,7 @@ public class GNSSActivity extends AppCompatActivity implements LocationListener 
 
     }
 
-    public void updateAzimuth(float azimuth) {
-        compassView.setDegree(azimuth);
-    }
-
     public void showSatellitesFilter() {
-//        String[] constellations = {"All", "GPS", "Galileo", "Glonass", "Beidou", "QZSS"};
-//        boolean[] fixOptions = {true, false};
-//        String selection = selectedConstellation;
 
         LayoutInflater inflater = getLayoutInflater();
         View dialogView = inflater.inflate(R.layout.dialog_satellite_filter, null);
@@ -213,10 +206,13 @@ public class GNSSActivity extends AppCompatActivity implements LocationListener 
         coordinatesView.setCoordinates(location.getLatitude(), location.getLongitude());
     }
 
+    public void updateAzimuth(float azimuth) {
+        compassView.setDegree(azimuth);
+    }
+
     @Override
     public void onStatusChanged(String provider, int status, Bundle extras) {
         LocationListener.super.onStatusChanged(provider, status, extras);
-
     }
 
     @Override

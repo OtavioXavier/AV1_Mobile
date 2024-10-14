@@ -9,8 +9,6 @@ import android.hardware.SensorManager;
 public class RotationSensorHandler implements SensorEventListener {
     private SensorManager sensorManager;
     private Sensor rotationSensor;
-    private float[] rotationMatrix = new float[9];
-    private float[] orientation = new float[3];
     private GNSSActivity activity;
 
     public RotationSensorHandler(Context context, GNSSActivity activity) {
@@ -33,14 +31,12 @@ public class RotationSensorHandler implements SensorEventListener {
             float[] rotationMatrix = new float[9];
             SensorManager.getRotationMatrixFromVector(rotationMatrix, event.values);
 
-            SensorManager.remapCoordinateSystem(rotationMatrix, SensorManager.AXIS_X, SensorManager.AXIS_Y, rotationMatrix);
+            float[] orientation = new float[3];
+            SensorManager.getOrientation(rotationMatrix, orientation);
+            float azimuth = (float) Math.toDegrees(orientation[0]);
+            azimuth = (azimuth + 360) % 360;  // Normaliza o azimute para [0, 360] graus
 
-            float[] orientationAngles = new float[3];
-            SensorManager.getOrientation(rotationMatrix, orientationAngles);
-
-            float azimuth = (float) Math.toDegrees(orientationAngles[0]);
-            azimuth = (azimuth + 360) % 360;
-            activity.updateAzimuth(azimuth + 45);
+            activity.updateAzimuth(Math.round(-azimuth));
         }
     }
 

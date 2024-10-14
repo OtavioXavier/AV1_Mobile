@@ -1,23 +1,15 @@
 package com.example.avaliaon1;
 
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.drawable.Drawable;
-import android.text.TextPaint;
 import android.util.AttributeSet;
-import android.view.MotionEvent;
 import android.view.View;
-import android.widget.Toast;
 
 import java.util.Locale;
 
-/**
- * TODO: document your custom view class.
- */
+
 public class CoordinatesView extends View {
 
     private double mLatitude;
@@ -27,6 +19,7 @@ public class CoordinatesView extends View {
     private Paint backgroundPaint = new Paint();
     private Paint borderPaint = new Paint();
     private Paint textPaint = new Paint();
+    private Paint directionPaint = new Paint();
 
     public CoordinatesView(Context context) {
         super(context);
@@ -53,8 +46,9 @@ public class CoordinatesView extends View {
         borderPaint.setColor(Color.rgb(218, 165, 32));
 
         textPaint.setColor(Color.WHITE);
-        textPaint.setTextSize(22);
+        textPaint.setTextSize(32);
         textPaint.setAntiAlias(true);
+
     }
 
     @Override
@@ -64,10 +58,12 @@ public class CoordinatesView extends View {
         //Plano de fundo
         canvas.drawRect(0, 0, getWidth(), getHeight(), backgroundPaint);
         canvas.drawRect(0, 0, getWidth(), getHeight(), borderPaint);
+        float latitudeY = (getHeight()/2) + 20;
+        float longitudeY = (getHeight()/2) - 20;
 
         //Latitude e Longitude
-        canvas.drawText("Latitude: " + getFormatedDegrees(mLatitude), 20, 100, textPaint);
-        canvas.drawText("Longitude: " + getFormatedDegrees(mLongitude), 20, 190, textPaint);
+        canvas.drawText("Latitude: " + getFormatedDegrees(mLatitude), 20, latitudeY , textPaint);
+        canvas.drawText("Longitude: " + getFormatedDegrees(mLongitude), 20, longitudeY, textPaint);
     }
 
 

@@ -45,7 +45,8 @@ public class CompassView extends View {
         borderPaint.setStrokeWidth(12);
         borderPaint.setColor(Color.rgb(218, 165, 32));
 
-        textPaint.setTextSize(28);
+        textPaint.setTextSize(22);
+        textPaint.setFakeBoldText(true);
         textPaint.setColor(Color.WHITE);
         textPaint.setAntiAlias(true);
     }
@@ -76,12 +77,12 @@ public class CompassView extends View {
         canvas.drawBitmap(scaledBitmap, matrix, null);
 
         // Mostrar o ângulo atual
-        canvas.drawText(mDegree + "°", 25, 40, textPaint);
+        canvas.drawText(-mDegree + "°", 25, 40, textPaint);
     }
 
 
     public void setDegree(float degree) {
-        this.mDegree = Math.round(degree);
+        this.mDegree = degree;
         invalidate();
     }
 }
