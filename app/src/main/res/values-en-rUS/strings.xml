@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">N1 Assessment</string>
+    <string name="gnss_view_link">GNSS</string>
+    <string name="atividade_2_view_link">Activity Screen 2</string>
+    <string name="atividade_3_view_link">Activity Screen 3</string>
+    <string name="titulo_gnss">GNSS</string>
+    <string name="longitude">"Longitude: "</string>
+    <string name="latitude">Latitude:</string>
+    <string name="filtrar_sat_lites">Filter Satellites</string>
+    <string name="aplicar">Apply</string>
+    <string name="all">All</string>
+    <string name="cancelar">Cancel</string>
+    <string name="salvar">Save</string>
+    <string name="switch_coordinate_type">Switch coordinate type</string>
+    <string name="tipo_salvo">Saved type:</string>
+    <string name="cancelado">Canceled</string>
+    <string name="erro_ao_inicializar_locationmanager">Error initializing LocationManager</string>
+    <string name="escolha_a_constela_o">Choose the Constellation</string>
+    <string name="used_in_fix">Used in Fix</string>
+</resources>

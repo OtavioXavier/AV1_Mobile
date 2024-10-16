@@ -51,7 +51,7 @@ public class GNSSActivity extends AppCompatActivity implements LocationListener 
 
         // Verifique se locationManager não é null
         if (locationManager == null) {
-            Toast.makeText(this, "Erro ao inicializar LocationManager", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.erro_ao_inicializar_locationmanager, Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -109,9 +109,9 @@ public class GNSSActivity extends AppCompatActivity implements LocationListener 
         usedInFixCheckBox.setChecked(filterUsedInFix);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Filtrar Satélites")
+        builder.setTitle(R.string.filtrar_sat_lites)
                 .setView(dialogView)
-                .setPositiveButton("Aplicar", (dialog, which) -> {
+                .setPositiveButton(R.string.aplicar, (dialog, which) -> {
                     // Update filter variables
                     int selectedId = constellationGroup.getCheckedRadioButtonId();
                     if (selectedId == R.id.gps) {
@@ -132,7 +132,7 @@ public class GNSSActivity extends AppCompatActivity implements LocationListener 
                     satellitesMapView.setFilters(selectedConstellation, filterUsedInFix);
                     satelliteSignalView.setFilters(selectedConstellation, filterUsedInFix);
                 })
-                .setNegativeButton("Cancelar", (dialog, which) -> {
+                .setNegativeButton(R.string.cancelar, (dialog, which) -> {
                     // Revert selection if needed
                 }).show();
     }
@@ -145,9 +145,9 @@ public class GNSSActivity extends AppCompatActivity implements LocationListener 
         }
 
         AlertDialog.Builder switchBox = new AlertDialog.Builder(GNSSActivity.this);
-        switchBox.setTitle("Switch coordinate type").setIcon(R.drawable.switch_box_icon).setSingleChoiceItems(choiceStrings, choiceCoordinate, (dialog, which) -> {
+        switchBox.setTitle(R.string.switch_coordinate_type).setIcon(R.drawable.switch_box_icon).setSingleChoiceItems(choiceStrings, choiceCoordinate, (dialog, which) -> {
             choiceCoordinate = which;
-        }).setPositiveButton("Salvar", (dialog, which) -> {
+        }).setPositiveButton(R.string.salvar, (dialog, which) -> {
             choiceCoordinate = ((AlertDialog) dialog).getListView().getCheckedItemPosition();
             for (CoordinateTypes type : CoordinateTypes.values()) {
                 if (choices[choiceCoordinate].equals(type)) {
@@ -155,9 +155,9 @@ public class GNSSActivity extends AppCompatActivity implements LocationListener 
                     break;
                 }
             }
-            Toast.makeText(GNSSActivity.this, "Tipo salvo: " + choiceStrings[choiceCoordinate], Toast.LENGTH_SHORT).show();
-        }).setNegativeButton("Cancelar", (dialog, which) -> {
-            Toast.makeText(GNSSActivity.this, "Cancelado!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(GNSSActivity.this, getString(R.string.tipo_salvo) + choiceStrings[choiceCoordinate], Toast.LENGTH_SHORT).show();
+        }).setNegativeButton(R.string.cancelar, (dialog, which) -> {
+            Toast.makeText(GNSSActivity.this, R.string.cancelado, Toast.LENGTH_SHORT).show();
         });
         switchBox.show();
     }

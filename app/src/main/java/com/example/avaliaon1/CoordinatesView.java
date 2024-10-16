@@ -62,8 +62,9 @@ public class CoordinatesView extends View {
         float longitudeY = (getHeight()/2) - 20;
 
         //Latitude e Longitude
-        canvas.drawText("Latitude: " + getFormatedDegrees(mLatitude), 20, latitudeY , textPaint);
-        canvas.drawText("Longitude: " + getFormatedDegrees(mLongitude), 20, longitudeY, textPaint);
+        canvas.drawText(getContext().getString(R.string.latitude) + getFormatedDegrees(mLatitude), 20, latitudeY , textPaint);
+
+        canvas.drawText(getContext().getString(R.string.longitude) + getFormatedDegrees(mLongitude), 20, longitudeY, textPaint);
     }
 
 

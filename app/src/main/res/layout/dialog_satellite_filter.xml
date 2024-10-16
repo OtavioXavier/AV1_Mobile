@@ -8,7 +8,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Escolha a Constelação" />
+        android:text="@string/escolha_a_constela_o" />
 
     <RadioGroup
         android:id="@+id/constellation_group"
@@ -19,7 +19,7 @@
             android:id="@+id/all_constellations"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="All" />
+            android:text="@string/all" />
 
         <RadioButton
             android:id="@+id/gps"
@@ -56,6 +56,6 @@
         android:id="@+id/used_in_fix"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Used in Fix"
+        android:text="@string/used_in_fix"
         android:checked="false" />
 </LinearLayout>

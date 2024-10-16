@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Avaliação N1</string>
     <string name="gnss_view_link">GNSS</string>
@@ -5,17 +6,16 @@
     <string name="atividade_3_view_link">Tela Atividade 3</string>
     <string name="titulo_gnss">GNSS</string>
     <string name="longitude">"Longitude: "</string>
-    <string name="latitude">"Latitude: "</string>
+    <string name="latitude">Latitude:</string>
     <string name="filtrar_sat_lites">Filtrar Satélites</string>
     <string name="aplicar">Aplicar</string>
+    <string name="all">Todos</string>
     <string name="cancelar">Cancelar</string>
     <string name="salvar">Salvar</string>
-    <string name="switch_coordinate_type">Switch coordinate type</string>
+    <string name="switch_coordinate_type">Alternar tipo de coordenada</string>
     <string name="tipo_salvo">"Tipo salvo: "</string>
-    <string name="cancelarr">Cancelar</string>
-    <string name="cancelado">Cancelado!</string>
+    <string name="cancelado">Cancelado</string>
     <string name="erro_ao_inicializar_locationmanager">Erro ao inicializar LocationManager</string>
     <string name="escolha_a_constela_o">Escolha a Constelação</string>
-    <string name="used_in_fix">Used in Fix</string>
-    <string name="all">All</string>
+    <string name="used_in_fix">Usado na correção</string>
 </resources>
