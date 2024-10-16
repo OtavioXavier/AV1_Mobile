@@ -20,7 +20,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.RadioGroup;
-import android.widget.TextView;
 import android.widget.Toast;
 
 public class GNSSActivity extends AppCompatActivity implements LocationListener {
@@ -32,6 +31,8 @@ public class GNSSActivity extends AppCompatActivity implements LocationListener 
     CoordinatesView coordinatesView;
     CompassView compassView;
     SatellitesMapView satellitesMapView;
+
+    SatelliteSignalView satelliteSignalView;
 
     private int choiceCoordinate = 0;
     private String selectedConstellation = "All";
@@ -45,6 +46,7 @@ public class GNSSActivity extends AppCompatActivity implements LocationListener 
         coordinatesView = (CoordinatesView) findViewById(R.id.coordinates);
         compassView = (CompassView) findViewById(R.id.compass);
         satellitesMapView = (SatellitesMapView) findViewById(R.id.satellites_map);
+        satelliteSignalView = (SatelliteSignalView) findViewById(R.id.satellite_signal_view);
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
 
         // Verifique se locationManager não é null
@@ -65,7 +67,6 @@ public class GNSSActivity extends AppCompatActivity implements LocationListener 
                 showSatellitesFilter();
             }
         });
-
 
         coordinatesView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -129,6 +130,7 @@ public class GNSSActivity extends AppCompatActivity implements LocationListener 
 
                     filterUsedInFix = usedInFixCheckBox.isChecked();
                     satellitesMapView.setFilters(selectedConstellation, filterUsedInFix);
+                    satelliteSignalView.setFilters(selectedConstellation, filterUsedInFix);
                 })
                 .setNegativeButton("Cancelar", (dialog, which) -> {
                     // Revert selection if needed
@@ -197,6 +199,7 @@ public class GNSSActivity extends AppCompatActivity implements LocationListener 
             public void onSatelliteStatusChanged(@NonNull GnssStatus status) {
                 super.onSatelliteStatusChanged(status);
                 satellitesMapView.setStatus(status);
+                satelliteSignalView.setStatus(status);
             }
         });
     }

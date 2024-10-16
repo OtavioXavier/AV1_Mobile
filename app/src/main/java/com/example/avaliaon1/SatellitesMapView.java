@@ -96,9 +96,6 @@ public class SatellitesMapView extends View {
         idBgPaint.setAntiAlias(true);
 
         idStrokePaint.setStyle(Paint.Style.STROKE);
-
-//        canvas.drawRect(0, 0, getWidth(), getHeight(), backgroundPaint);
-
         idStrokePaint.setStyle(Paint.Style.STROKE);
         idStrokePaint.setStrokeWidth(5); // Largura do contorno
         idStrokePaint.setColor(Color.WHITE); // Cor do contorno

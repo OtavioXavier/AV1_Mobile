@@ -3,9 +3,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <com.example.avaliaon1.CompassView
+    <com.example.avaliaon1.SatelliteSignalView
         style="@style/Widget.Theme.AvaliaçãoN1.MyView"
-        android:layout_width="87dp"
-        android:layout_height="75dp" />
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
 </FrameLayout>
